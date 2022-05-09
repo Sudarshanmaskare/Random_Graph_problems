@@ -1,0 +1,52 @@
+
+
+You are given an m x n integer matrix grid where each cell is either 0 (empty) or 1 (obstacle). You can move up, down, left, or right
+from and to an empty cell in one step.
+
+Return the minimum number of steps to walk from the upper left corner (0, 0) to the lower right corner (m - 1, n - 1) given that 
+you can eliminate at most k obstacles. 
+If it is not possible to find such walk return -1.
+
+
+
+
+
+class Solution {
+ int row[4] = {0, 1, 0, -1};
+    int col[4] = {1, 0, -1, 0};
+public:
+    int shortestPath(vector<vector<int>>& grid, int k) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> obs_seen(n, vector<int>(m, INT_MAX));
+        obs_seen[0][0] = 0;
+        int steps = 0;
+        queue<vector<int>> Q;
+        Q.push({0, 0, 0});
+        while(!Q.empty())
+        {
+            int size = Q.size();
+            for(int i=0; i<size; i++)
+            {
+                vector<int> current = Q.front();
+                Q.pop();
+                int x = current[0], y = current[1];
+                if(x==n-1 && y == m-1)
+                    return steps;
+                for(int j=0; j<4; j++)
+                {
+                    int new_x = x+row[j], new_y = y+col[j];
+                    if(new_x>=0 && new_y>=0 && new_x<n && new_y<m)
+                    {
+                        int obs = current[2] + grid[new_x][new_y];
+                        if(obs>=obs_seen[new_x][new_y] || obs>k)
+                            continue;
+                        obs_seen[new_x][new_y] = obs;
+                        Q.push({new_x, new_y, obs});
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+};
