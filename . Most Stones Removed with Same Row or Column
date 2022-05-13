@@ -1,0 +1,43 @@
+class Solution {
+public:
+    vector<int> parent,rank;
+    
+    int par(int u){
+        if(u==parent[u]) return u;
+        return u=par(parent[u]);
+    }
+    
+    void union_(int u,int v){
+        u=par(u);
+        v=par(v);
+        
+        if(rank[u]>rank[v]){
+            parent[v]=u;
+        }
+        else if(rank[u]<rank[v]){
+            parent[u]=v;
+        }
+        else{
+            parent[u]=v;
+            rank[v]++;
+        }
+    }
+    int removeStones(vector<vector<int>>& stones) {
+        parent.resize(50005,0);
+        rank.resize(50005,0);
+        int n=stones.size();
+        
+        for(int i=0;i<=20004;i++){
+            parent[i]=i;
+        }
+        for(auto var:stones){
+            union_(var[0],var[1]+10001);
+        }
+        
+        set<int> vis;
+        for(auto var:stones){
+            vis.insert(par(var[0]));
+        }
+        return stones.size()-vis.size();
+    }
+};
