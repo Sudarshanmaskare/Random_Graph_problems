@@ -1,0 +1,90 @@
+//DP(BELLMAN FORD)
+
+int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+          // int n=flights.size();
+          vector<vector<int>> dp(K+2,vector<int>(n,INT_MAX));
+          for(int i=0;i<=K+1;i++) dp[i][src]=0;
+          
+          for(int i=1;i<=K+1;i++){
+              for(auto &e:flights){
+                  int u=e[0];
+                  int v=e[1];
+                  int w=e[2];
+                  if(dp[i-1][u]!=INT_MAX) dp[i][v]=min(dp[i][v],dp[i-1][u]+w);
+              }
+          }
+        return dp[K+1][dst]==INT_MAX?-1:dp[K+1][dst];
+
+
+
+
+/////bfs
+
+#define pii pair<int,int> 
+class Solution {
+public:
+    vector<pii> adj[201];
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+        
+        for(auto var:flights){
+            adj[var[0]].push_back({var[1],var[2]});
+        }
+        
+        vector<int> dis(201,INT_MAX);
+        
+       queue<pii> q;
+        
+        q.push({0,src});
+        dis[src]=0;
+        
+        int level=0;
+        
+        while(!q.empty() && level<=k){
+            
+            int sz=q.size();
+            while(sz--){
+                auto temp=q.front();
+                q.pop();
+                
+                int u=temp.second;
+                for(auto var:adj[u]){
+                    if(dis[var.first]>temp.first+var.second){
+                        dis[var.first]=temp.first+var.second;
+                        q.push({dis[var.first],var.first});
+                    }
+                }
+            }
+            level++;
+        }
+        return dis[dst]==INT_MAX?-1:dis[dst];
+    }
+};
+
+/////DijigstrA
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+        // create adjacency list
+        unordered_map<int,vector<pair<int, int>>> adjList;
+        for( auto f : flights )
+            adjList[f[0]].push_back( { f[1], f[2] } );
+        
+        // minHeap based on cost of distance from source
+        priority_queue< vector<int>, vector<vector<int>>, greater<vector<int>> > minHeap;
+        minHeap.push( { 0, src, K+1 } ); // cost, vertex, hops
+        
+        while( !minHeap.empty() ) {
+            auto t = minHeap.top(); minHeap.pop();
+            int cost = t[0];
+            int curr = t[1];
+            int stop = t[2];
+            if( curr == dst )
+                return cost;
+
+            if( stop > 0 )
+                for( auto next : adjList[curr] )
+                    minHeap.push( { cost+next.second, next.first, stop-1 } );
+        }
+        return -1;
+    }
+    
+    
+    
