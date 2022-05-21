@@ -1,0 +1,48 @@
+
+
+
+
+You are given a list of positive integers nums where at each index i you can either jump to index i + nums[i] or to i - nums[i] if it is within the list.
+
+For each number in the list, find the minimum number of jumps required to reach another value with different parity in the original order of the input. 
+If you cannot reach another number with different parity, set it to -1.
+
+
+
+
+#define pii pair<int,int>
+vector<int> solve(vector<int>& ar) {
+   int n=ar.size();
+   vector<int> ans(n,-1);
+	queue<int>q;
+	vector<int> v[n];
+	for(int i=0;i<n;i++){
+		int k=i-ar[i];
+		if(k>=0){
+			v[k].push_back(i);
+			if(ar[i]%2!=ar[k]%2){
+				ans[i]=1;
+				q.push(i);
+			}
+		}
+		k=i+ar[i];
+		if(k<n){
+			v[k].push_back(i);
+			if(ar[i]%2!=ar[k]%2){
+				ans[i]=1;
+				q.push(i);
+			}
+		}
+	}
+	while(!q.empty()){
+		int f=q.front();
+		q.pop();
+		for(int i:v[f]){
+			if(ans[i]==-1&&ar[i]%2==ar[f]%2){
+				ans[i]=ans[f]+1;
+				q.push(i);
+			}
+		}
+	}
+	return ans;
+}
